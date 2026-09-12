@@ -2,9 +2,18 @@
   "package": "TIA_MCP_V16_foundation",
   "generatedAt": "2026-09-12T09:32:47.4533419+08:00",
   "source": "V16 runtime tools/list plus [McpServerTool] metadata",
-  "toolCount": 179,
+  "toolCount": 180,
   "note": "V16 static snapshot. Runtime tools/list remains authoritative when the server is running.",
   "tools": [
+    {
+      "name": "DetectPlcSimulationEnvironment",
+      "layer": "L1",
+      "domain": "PLCSIM",
+      "method": "DetectPlcSimulationEnvironment",
+      "returnType": "ResponseSimulationEnvironment",
+      "parameters": [],
+      "description": "[L1][PLCSIM] Read-only environment probe for standard SIMATIC S7-PLCSIM and PLCSIM Advanced. Checks installed product/path evidence, running processes, and network adapters. Does not start PLCSIM, create instances, download, or change CPU state."
+    },
     {
       "name": "AddDevice",
       "layer": "L2",

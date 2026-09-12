@@ -58,7 +58,7 @@
     "exitCodes": { "0": "success", "1": "completed with failed steps", "2": "error" }
   },
   "capabilities": {
-    "mcpToolCount": 189,
+    "mcpToolCount": 180,
     "mcpToolLayers": {
       "L0": 6,
       "L1": 31,

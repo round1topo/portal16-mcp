@@ -492,4 +492,8 @@ V20 兼容性修复小版本（修复 GitHub issue #2）。
 ## [0.0.3] - 2025-06-23
 
 - Release on Visual Studio Code Marketplace
+## 2026-09-13
+
+- Added `DetectPlcSimulationEnvironment`, a read-only probe for standard PLCSIM and PLCSIM Advanced installation evidence, running processes, and network adapters.
+- The probe is the first S02-05 simulation slice. It intentionally does not start PLCSIM, create a simulation CPU, download, or change CPU mode.
 
