@@ -799,6 +799,114 @@ namespace TiaMcpServer.Siemens
             });
         }
 
+        public ResponseJsonReport SetSimulationDuringBlockCompilation(bool enabled = true)
+        {
+            return _sta.Run(() =>
+            {
+                if (IsProjectNull())
+                {
+                    return new ResponseJsonReport
+                    {
+                        Ok = false,
+                        Message = "No project open.",
+                        Data = new JsonObject
+                        {
+                            ["enabled"] = false,
+                            ["readBack"] = false
+                        },
+                        Meta = new JsonObject
+                        {
+                            ["timestamp"] = DateTime.Now,
+                            ["success"] = false,
+                            ["evidenceLevel"] = "portal-runtime"
+                        }
+                    };
+                }
+
+                var project = _project!;
+                var property = project.GetType().GetProperty(
+                    "IsSimulationDuringBlockCompilationEnabled",
+                    BindingFlags.Public | BindingFlags.Instance);
+
+                if (property == null)
+                {
+                    return new ResponseJsonReport
+                    {
+                        Ok = false,
+                        Message = "V16 Project.IsSimulationDuringBlockCompilationEnabled is not exposed by the loaded Openness API.",
+                        Data = new JsonObject
+                        {
+                            ["propertyFound"] = false,
+                            ["enabledRequested"] = enabled,
+                            ["readBack"] = false
+                        },
+                        Meta = new JsonObject
+                        {
+                            ["timestamp"] = DateTime.Now,
+                            ["success"] = false,
+                            ["evidenceLevel"] = "portal-runtime"
+                        }
+                    };
+                }
+
+                if (!property.CanRead || !property.CanWrite || property.PropertyType != typeof(bool))
+                {
+                    return new ResponseJsonReport
+                    {
+                        Ok = false,
+                        Message = "Project.IsSimulationDuringBlockCompilationEnabled is not a writable Boolean property.",
+                        Data = new JsonObject
+                        {
+                            ["propertyFound"] = true,
+                            ["propertyCanRead"] = property.CanRead,
+                            ["propertyCanWrite"] = property.CanWrite,
+                            ["propertyType"] = property.PropertyType.FullName,
+                            ["enabledRequested"] = enabled,
+                            ["readBack"] = false
+                        },
+                        Meta = new JsonObject
+                        {
+                            ["timestamp"] = DateTime.Now,
+                            ["success"] = false,
+                            ["evidenceLevel"] = "portal-runtime"
+                        }
+                    };
+                }
+
+                var before = (bool)property.GetValue(project)!;
+                property.SetValue(project, enabled);
+                project.Save();
+                var after = (bool)property.GetValue(project)!;
+                var ok = after == enabled;
+
+                return new ResponseJsonReport
+                {
+                    Ok = ok,
+                    Message = ok
+                        ? $"Project simulation compilation support set to {after} and saved."
+                        : $"Project simulation compilation support readback was {after}, expected {enabled}.",
+                    Data = new JsonObject
+                    {
+                        ["projectName"] = project.Name,
+                        ["projectPath"] = project.Path?.FullName,
+                        ["property"] = property.Name,
+                        ["before"] = before,
+                        ["enabledRequested"] = enabled,
+                        ["enabled"] = after,
+                        ["readBack"] = ok,
+                        ["isModifiedAfterSave"] = project.IsModified
+                    },
+                    Meta = new JsonObject
+                    {
+                        ["timestamp"] = DateTime.Now,
+                        ["success"] = ok,
+                        ["evidenceLevel"] = "portal-runtime",
+                        ["projectSaved"] = true
+                    }
+                };
+            });
+        }
+
         public bool SaveAsProject(string path)
         {
             _logger?.LogInformation($"Saving project as: {path}");
@@ -10574,6 +10682,8 @@ namespace TiaMcpServer.Siemens
 
         public ModelContextProtocol.ResponseJsonReport GetOpcUaConfig(string softwarePath)
         {
+            return _sta.Run(() =>
+            {
             var data = new JsonObject { ["softwarePath"] = softwarePath, ["timestamp"] = DateTime.Now.ToString("O") };
 
             if (IsProjectNull())
@@ -10604,6 +10714,7 @@ namespace TiaMcpServer.Siemens
                 _logger?.LogError(ex, "GetOpcUaConfig failed for {SoftwarePath}", softwarePath);
                 return new ModelContextProtocol.ResponseJsonReport { Ok = false, Message = $"Error: {ex.Message}", Data = data };
             }
+            });
         }
 
         private static JsonArray CollectOpcUaItems(object? collection)
@@ -10626,6 +10737,8 @@ namespace TiaMcpServer.Siemens
 
         public ResponseMessage SetOpcUaInterfaceEnabled(string softwarePath, string interfaceName, bool enabled, string interfaceType = "ServerInterface")
         {
+            return _sta.Run(() =>
+            {
             if (IsProjectNull()) return new ResponseMessage { Message = "No project open." };
             var plc = GetPlcSoftware(softwarePath);
             if (plc == null) return new ResponseMessage { Message = $"PLC software not found: '{softwarePath}'." };
@@ -10659,10 +10772,13 @@ namespace TiaMcpServer.Siemens
                 _logger?.LogError(ex, "SetOpcUaInterfaceEnabled failed");
                 return new ResponseMessage { Message = $"Error: {ex.Message}" };
             }
+            });
         }
 
         public ResponseMessage ExportOpcUaInterface(string softwarePath, string interfaceName, string exportPath, string interfaceType = "ServerInterface")
         {
+            return _sta.Run(() =>
+            {
             if (IsProjectNull()) return new ResponseMessage { Message = "No project open." };
             var plc = GetPlcSoftware(softwarePath);
             if (plc == null) return new ResponseMessage { Message = $"PLC software not found: '{softwarePath}'." };
@@ -10697,10 +10813,13 @@ namespace TiaMcpServer.Siemens
                 _logger?.LogError(ex, "ExportOpcUaInterface failed");
                 return new ResponseMessage { Message = $"Export failed: {ex.Message}" };
             }
+            });
         }
 
         public ResponseMessage ImportOpcUaInterface(string softwarePath, string importPath, string interfaceType = "ServerInterface")
         {
+            return _sta.Run(() =>
+            {
             if (IsProjectNull()) return new ResponseMessage { Message = "No project open." };
             var plc = GetPlcSoftware(softwarePath);
             if (plc == null) return new ResponseMessage { Message = $"PLC software not found: '{softwarePath}'." };
@@ -10746,6 +10865,7 @@ namespace TiaMcpServer.Siemens
                 _logger?.LogError(ex, "ImportOpcUaInterface failed");
                 return new ResponseMessage { Message = $"Import failed: {ex.Message}" };
             }
+            });
         }
 
         private static object? FindByName(object? collection, string name)
@@ -10770,11 +10890,35 @@ namespace TiaMcpServer.Siemens
             bool keepActualValues = true,
             bool startAfterDownload = true,
             bool stopBeforeDownload = true,
-            string? password = null)
+            string? password = null,
+            string? pgPcInterface = null,
+            bool includeHardware = false)
+        {
+            return _sta.Run(() => DownloadToPlcCore(
+                softwarePath,
+                consistentBlocksOnly,
+                keepActualValues,
+                startAfterDownload,
+                stopBeforeDownload,
+                password,
+                pgPcInterface,
+                includeHardware));
+        }
+
+        private ResponseDownload DownloadToPlcCore(
+            string softwarePath,
+            bool consistentBlocksOnly,
+            bool keepActualValues,
+            bool startAfterDownload,
+            bool stopBeforeDownload,
+            string? password,
+            string? pgPcInterface,
+            bool includeHardware)
         {
             _logger?.LogInformation(
-                "DownloadToPlc: softwarePath={SoftwarePath} consistentOnly={C} keepDB={K} start={S} stop={T} hasPassword={P}",
-                softwarePath, consistentBlocksOnly, keepActualValues, startAfterDownload, stopBeforeDownload, !string.IsNullOrEmpty(password));
+                "DownloadToPlc: softwarePath={SoftwarePath} consistentOnly={C} keepDB={K} start={S} stop={T} hasPassword={P} pgPcInterface={I} includeHardware={H}",
+                softwarePath, consistentBlocksOnly, keepActualValues, startAfterDownload, stopBeforeDownload,
+                !string.IsNullOrEmpty(password), pgPcInterface, includeHardware);
 
             if (IsProjectNull())
                 return new ResponseDownload { Ok = false, Message = "No project open." };
@@ -10839,9 +10983,71 @@ namespace TiaMcpServer.Siemens
                         Message = "Download(IConfiguration,…) method not found on DownloadProvider. TIA Portal version mismatch?"
                     };
 
+                var downloadConfigurationType = downloadMethod.GetParameters()[0].ParameterType;
+
+                object downloadConfiguration = configuration;
+                if (!string.IsNullOrWhiteSpace(pgPcInterface))
+                {
+                    var routes = EnumerateDownloadRoutes(configuration);
+                    var selectedRoute = SelectSimulationRoute(routes, pgPcInterface);
+                    if (selectedRoute == null)
+                    {
+                        return new ResponseDownload
+                        {
+                            Ok = false,
+                            Message = $"No PLCSIM/Softbus route matching '{pgPcInterface}' was found. Available routes: {string.Join(", ", routes.Select(route => route.Label))}"
+                        };
+                    }
+
+                    if (!TryApplyDownloadRoute(configuration, selectedRoute, out var applied, out var applyError))
+                    {
+                        return new ResponseDownload
+                        {
+                            Ok = false,
+                            Message = $"Failed to apply download route '{selectedRoute.Label}': {applyError}",
+                            Errors = new[] { applyError }
+                        };
+                    }
+
+                    var appliedConfiguration = applied ?? configuration;
+                    if (downloadConfigurationType.IsInstanceOfType(appliedConfiguration))
+                    {
+                        downloadConfiguration = appliedConfiguration;
+                    }
+                    else if (downloadConfigurationType.IsInstanceOfType(selectedRoute.TargetInterface))
+                    {
+                        // V16 applies the route in place and returns Boolean; the
+                        // selected target itself is the IConfiguration for Download.
+                        downloadConfiguration = selectedRoute.TargetInterface;
+                    }
+                    else
+                    {
+                        return new ResponseDownload
+                        {
+                            Ok = false,
+                            Message = $"Selected download route does not implement {downloadConfigurationType.FullName}.",
+                            Errors = new[] { selectedRoute.Label }
+                        };
+                    }
+                    _logger?.LogInformation("DownloadToPlc: applied route {Route}", selectedRoute.Label);
+                }
+
+                if (!downloadConfigurationType.IsInstanceOfType(downloadConfiguration))
+                {
+                    return new ResponseDownload
+                    {
+                        Ok = false,
+                        Message = $"Download configuration type '{downloadConfiguration.GetType().FullName}' is not assignable to '{downloadConfigurationType.FullName}'."
+                    };
+                }
+
+                var downloadOptions = includeHardware
+                    ? DownloadOptions.Hardware | DownloadOptions.Software
+                    : DownloadOptions.Software;
+
                 var rawResult = downloadMethod.Invoke(
                     downloadProvider,
-                    new object[] { configuration, preDelegate, postDelegate, DownloadOptions.Software });
+                    new object[] { downloadConfiguration, preDelegate, postDelegate, downloadOptions });
 
                 if (rawResult is not DownloadResult result)
                     return new ResponseDownload { Ok = false, Message = "Download returned an unexpected result type." };
@@ -10850,17 +11056,25 @@ namespace TiaMcpServer.Siemens
             }
             catch (Exception ex)
             {
-                _logger?.LogError(ex, "DownloadToPlc failed for {SoftwarePath}", softwarePath);
+                var real = ex is TargetInvocationException tie && tie.InnerException != null
+                    ? tie.InnerException
+                    : ex;
+                _logger?.LogError(real, "DownloadToPlc failed for {SoftwarePath}", softwarePath);
                 return new ResponseDownload
                 {
                     Ok = false,
-                    Message = $"Download failed: {ex.Message}",
-                    Errors = new[] { ex.Message }
+                    Message = $"Download failed: {real.Message}",
+                    Errors = new[] { real.ToString() }
                 };
             }
         }
 
         public ResponseCheckDownload CheckDownloadReadiness(string softwarePath)
+        {
+            return _sta.Run(() => CheckDownloadReadinessCore(softwarePath));
+        }
+
+        private ResponseCheckDownload CheckDownloadReadinessCore(string softwarePath)
         {
             var issues = new List<string>();
 

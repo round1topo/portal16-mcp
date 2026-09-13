@@ -1,16 +1,16 @@
 ﻿{
   "schemaVersion": "2026-05-25",
-  "bundleVersion": "2.2.1",
-  "packageName": "TIA_MCP_交付包_20260525_V20S7DCL_184330",
+  "bundleVersion": "2.2.2",
+  "packageName": "TIA_Portal_Openness_MCP_V16_20260913",
   "packageType": "tia-portal-mcp-complete-offline-delivery-bundle",
   "generatedAt": "2026-05-31T20:30:00+08:00",
   "refreshedAt": "2026-05-31T20:30:00+08:00",
   "target": {
-    "tiaPortalMajorVersion": [20, 21],
-    "publicApiPathExample": "D:\\app\\TIA21\\Portal V21\\PublicAPI or D:\\app\\TIA20\\Portal V20\\PublicAPI",
+    "tiaPortalMajorVersion": [16],
+    "publicApiPathExample": "D:\\app\\TIA16\\Portal V16\\PublicAPI",
     "runtimeRequirement": ".NET Framework 4.8",
     "windowsGroupRequirement": "Siemens TIA Openness",
-    "newCliFlags": ["--tia-portal-location <path>", "--tia-major-version {20|21}"]
+    "newCliFlags": ["--tia-portal-location <path>", "--tia-major-version 16"]
   },
   "selfContainedScope": {
     "description": "The bundle contains runtime, skill, manuals, templates and blueprints required for PLC + WinCC Unified project generation.",
@@ -34,7 +34,7 @@
   "entrypoints": {
     "readme": "README.md",
     "skill": "tools/tiaportal-mcp/skill/SKILL.md",
-    "mcpServerExe": "tools/tiaportal-mcp/src/TiaMcpServer/bin/Release/net48/TiaMcpServer.exe",
+    "mcpServerExe": "tools/tiaportal-mcp/src/TiaMcpServer/bin-v16/Release/net48/TiaMcpServer.exe",
     "cursorExample": "cursor-mcp.example.json",
     "toolRoster": "manifest/tools-list.json",
     "toolMatrix": "docs/tool-capability-matrix.md",
@@ -58,16 +58,21 @@
     "exitCodes": { "0": "success", "1": "completed with failed steps", "2": "error" }
   },
   "capabilities": {
-    "mcpToolCount": 180,
+    "mcpToolCount": 188,
     "mcpToolLayers": {
       "L0": 6,
-      "L1": 31,
-      "L2": 152
+      "L1": 37,
+      "L2": 145
     },
     "newToolsThisRelease": [
-      "SamplePlcLiveValuesS7",
-      "TraceTagCauseLive",
-      "GetPlcRunStateS7"
+      "ProbeStandardPlcSim",
+      "SetSimulationDuringBlockCompilation",
+      "InspectDownloadRoutes",
+      "PowerOnStandardPlcSim",
+      "RunStandardPlcSim",
+      "StopStandardPlcSim",
+      "ReadStandardPlcSimOutput",
+      "DownloadToStandardPlcSim"
     ],
     "removedToolsThisRelease": [],
     "hmiTemplateJsonCount": 8,

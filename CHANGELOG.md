@@ -1,5 +1,13 @@
 # Change Log
 
+## [2.2.2] - 2026-09-13 - TIA Portal V16 标准 PLCSIM 最小闭环
+
+- 新增标准 SIMATIC S7-PLCSIM V16 API 探测、上电、RUN/STOP、过程输出读取和隔离下载路由工具。
+- V16 下载链路已验证：`Connect` → `OpenProject` → 编译 `0 errors` → 应用 `PLCSIM` 路由 → 下载成功 → CPU RUN → 读取输出值。
+- 修复 V16 OPC UA 工程配置访问的 Openness STA 线程边界。
+- 移除源码中的本机 TIA/PLCSIM 绝对路径；可通过 `--tia-portal-location`、`apiPath` 或 `PLCSIM_V16_BIN` 指定本机安装位置。
+- 当前发布不包含 TIA 工程、PLCSIM 运行数据库、编译输出和本机验证产物。
+
 ## [2.2.1] - 2026-06-09 - v2.2.0 三工具真机验证 + 因果溯源在线模式消息修复
 
 v2.2.0 的 3 个在线监控工具已在真机（CPU 1211C @ 192.168.0.32）端到端验证通过：
@@ -492,8 +500,3 @@ V20 兼容性修复小版本（修复 GitHub issue #2）。
 ## [0.0.3] - 2025-06-23
 
 - Release on Visual Studio Code Marketplace
-## 2026-09-13
-
-- Added `DetectPlcSimulationEnvironment`, a read-only probe for standard PLCSIM and PLCSIM Advanced installation evidence, running processes, and network adapters.
-- The probe is the first S02-05 simulation slice. It intentionally does not start PLCSIM, create a simulation CPU, download, or change CPU mode.
-

@@ -1,6 +1,11 @@
-# TIA Portal MCP Server (v2.2.1 · V20 + V21 · S7DCL · CLI · read-only online monitoring)
+# TIA Portal V16 MCP Server (v2.2.2)
 
 **English** · [中文](README.md)
+
+> This repository targets TIA Portal V16 and standard S7-PLCSIM V16. The verified
+> minimal loop is isolated project download, CPU RUN, and process-output readback.
+> The historical shared documentation below contains V20/V21 material and is not
+> the V16 runtime contract.
 
 > **v2.0 — the same exe is also a declarative CLI (`tia`).** Any AI emits a
 > YAML/JSON spec, any engineer runs one command (`tia gen spec.yaml`) — no MCP

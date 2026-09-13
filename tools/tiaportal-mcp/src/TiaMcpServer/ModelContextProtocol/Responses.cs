@@ -590,34 +590,6 @@ namespace TiaMcpServer.ModelContextProtocol
         public bool? IsReachable { get; set; }
     }
 
-    public class ResponseSimulationEnvironment : ResponseMessage
-    {
-        public bool? Ok { get; set; }
-        public bool? StandardPlcSimDetected { get; set; }
-        public bool? PlcSimAdvancedDetected { get; set; }
-        public bool? StandardPlcSimRunning { get; set; }
-        public bool? PlcSimAdvancedRunning { get; set; }
-        public string[]? Evidence { get; set; }
-        public PlcSimulationProcess[]? Processes { get; set; }
-        public PlcSimulationNetworkAdapter[]? NetworkAdapters { get; set; }
-    }
-
-    public class PlcSimulationProcess
-    {
-        public int ProcessId { get; set; }
-        public string? Name { get; set; }
-        public string? Product { get; set; }
-    }
-
-    public class PlcSimulationNetworkAdapter
-    {
-        public string? Name { get; set; }
-        public string? Description { get; set; }
-        public string? Type { get; set; }
-        public string? OperationalStatus { get; set; }
-        public string[]? Addresses { get; set; }
-    }
-
     public class CompareEntry
     {
         public string? Path { get; set; }

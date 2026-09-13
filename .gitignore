@@ -3,10 +3,12 @@
 .vs/
 **/obj/
 **/obj-v20/
+**/obj-v16/
 **/bin/Debug/
 **/bin-v20/Debug/
 **/bin/Release/
 **/bin-v20/Release/
+**/bin-v16/Release/
 TiaMcp_Output/
 *.user
 *.suo

@@ -5580,7 +5580,6 @@ namespace TiaMcpServer.ModelContextProtocol
             }
         }
 
-        #if !TIA_V16
         [McpServerTool(Name = "CheckDownloadReadiness"), Description(
             "[L1][Category:PLC-Online][PreCondition:Connect+OpenProject+CompileSoftware]" +
             " Check whether a PLC is ready to receive a program download WITHOUT actually downloading." +
@@ -5588,7 +5587,6 @@ namespace TiaMcpServer.ModelContextProtocol
             " Returns Ready=true only when all checks pass." +
             " Use this before DownloadToPlc to surface problems early (missing IP, no hardware config, etc.)." +
             " Does NOT compile — run CompileSoftware first to ensure blocks are consistent.")]
-        #endif
         public static ResponseCheckDownload CheckDownloadReadiness(
             [Description("softwarePath: path to the PLC software in the project tree, e.g. 'PLC_1'")] string softwarePath)
         {

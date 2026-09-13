@@ -39,8 +39,16 @@ function Ok([string]$msg) {
 
 Write-Host "Bundle root: $root"
 
-$exe = Join-Path $root "tools\tiaportal-mcp\src\TiaMcpServer\bin\Release\net48\TiaMcpServer.exe"
-if (-not (Test-Path -LiteralPath $exe)) { Fail "Missing server exe: $exe" } else { Ok "TiaMcpServer.exe present" }
+$project = Join-Path $root "tools\tiaportal-mcp\src\TiaMcpServer\TiaMcpServer.V16.csproj"
+if (-not (Test-Path -LiteralPath $project)) { Fail "Missing V16 project: $project" } else { Ok "V16 project present" }
+
+$exe = Join-Path $root "tools\tiaportal-mcp\src\TiaMcpServer\bin-v16\Release\net48\TiaMcpServer.exe"
+if (Test-Path -LiteralPath $exe) {
+    Ok "Prebuilt V16 server present"
+}
+else {
+    Write-Host "[INFO] Prebuilt V16 server not included; source-only checkout requires a local build." -ForegroundColor Yellow
+}
 
 $readme = Join-Path $root "README.md"
 if (-not (Test-Path -LiteralPath $readme)) { Fail "Missing README.md" } else { Ok "README.md present" }

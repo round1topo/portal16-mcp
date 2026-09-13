@@ -1,26 +1,49 @@
-# TIA Portal MCP 完整交付包（**v2.2.1** / V20+V21 + S7DCL + CLI + 在线只读监控）
+# TIA Portal V16 MCP Server（**v2.2.2**）
 
 [English](README.en.md) · **中文**
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) [![Release](https://img.shields.io/github/v/release/bulaofen0036-coder/TIA_Portal_Openness_MCP)](https://github.com/bulaofen0036-coder/TIA_Portal_Openness_MCP/releases) [![validate-bundle](https://github.com/bulaofen0036-coder/TIA_Portal_Openness_MCP/actions/workflows/validate.yml/badge.svg)](https://github.com/bulaofen0036-coder/TIA_Portal_Openness_MCP/actions/workflows/validate.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) [![validate-bundle](https://github.com/round1topo/portal16-mcp/actions/workflows/validate.yml/badge.svg)](https://github.com/round1topo/portal16-mcp/actions/workflows/validate.yml)
 
 > **免费开源（MIT）**：服务器**无需任何 license key** 即可运行，**不含任何授权校验代码**。
 
-![架构图](docs/assets/architecture.svg)
+> 本仓库是 TIA Portal V16 适配版。当前已验证的主闭环是标准 PLCSIM V16：隔离工程下载、CPU RUN、过程输出读取。V20/V21 共用文档仍保留在仓库中，但不作为 V16 运行时契约。
 
-在 **Windows + TIA Portal V20 或 V21** 下，通过 **MCP（stdio 或 HTTP）** 驱动博途：建项目、加硬件、生成 PLC（Tag/UDT/DB/SCL/LAD）、生成 **WinCC Unified** 画面与事件、编译诊断、保存。  
-包内含 **已编译运行时**、Skill、静态工具清单、能力矩阵、PLC/HMI 模板、**一键可读的项目蓝图**与手册。**不要求**另行克隆源码仓库。
+## V16 最小闭环
 
-## ⚡ 最快上手（3 步，零编程·CLI 路线）
+在 Windows + TIA Portal V16 + S7-PLCSIM V16 上，使用 MCP 完成：
 
-> 第一次用？**不需要 MCP 客户端、不需要写代码。** 装好 TIA 后照这 3 步，几分钟内生成第一个工程。
-> （想接 Cursor / Claude Desktop 等 AI 客户端走 MCP？跳到下方 [上手步骤](#上手步骤)。）
+```text
+Connect
+→ OpenProject
+→ CompileSoftware
+→ InspectDownloadRoutes
+→ DownloadToStandardPlcSim
+→ RunStandardPlcSim
+→ ReadStandardPlcSimOutput
+```
 
-1. **准备**：装好 **TIA Portal V20 或 V21** + **.NET Framework 4.8**；把当前 Windows 用户加入本地组 **`Siemens TIA Openness`**，注销重登一次。**装的是哪个版本就用哪个**——交付包根目录已备好 `tia.cmd`（V21）/ `tia-v20.cmd`（V20），其余路径自动选。
-2. **预热（可选但强烈推荐）**：双击 `scripts\预热.bat`，留着这个窗口。它常驻一个无界面 TIA，让之后每条命令 **~1 秒**连上（不预热则每次冷启动约 3 分钟）。用完按 `Ctrl+C` 关闭。
-3. **生成工程**：把现成模板 `templates\project-blueprints\scaffold_spec_motor.json`（或 `scaffold_spec_start_stop.json`）**拖到 `scripts\生成工程.bat` 图标上**——一条龙建项目→加 PLC/HMI→写块→编译→存盘。退出码 `0` 即成功。
-   - 想改成自己的需求：让任意 AI 照 [`docs/AI_spec_prompt.md`](docs/AI_spec_prompt.md) 产出一份 spec（YAML/JSON 都行），再拖给 `生成工程.bat`。
-   - 命令行等价写法：把根目录加进 PATH 后，`tia gen <spec>`（先 `--dry-run` 离线校验更稳）。
+完整参数、隔离目录约束和已验证证据见 [`docs/v16-standard-plcsim-closed-loop.md`](docs/v16-standard-plcsim-closed-loop.md)。
+
+## 环境要求
+
+- Windows
+- .NET Framework 4.8
+- TIA Portal V16 和 `Siemens TIA Openness` 用户组
+- S7-PLCSIM V16
+
+V16 MCP 可执行文件构建后位于：
+
+```text
+tools/tiaportal-mcp/src/TiaMcpServer/bin-v16/Release/net48/TiaMcpServer.exe
+```
+
+启动时传入本机 TIA 路径，例如：
+
+```text
+TiaMcpServer.exe --tia-major-version 16 --tia-portal-location "D:\Siemens\Portal V16"
+```
+
+标准 PLCSIM API 默认从常见 Program Files 路径查找；非标准安装位置可通过 `apiPath` 参数或环境变量 `PLCSIM_V16_BIN` 指定。
 
 ---
 

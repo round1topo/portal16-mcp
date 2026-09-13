@@ -2,18 +2,9 @@
   "package": "TIA_MCP_V16_foundation",
   "generatedAt": "2026-09-12T09:32:47.4533419+08:00",
   "source": "V16 runtime tools/list plus [McpServerTool] metadata",
-  "toolCount": 180,
+  "toolCount": 188,
   "note": "V16 static snapshot. Runtime tools/list remains authoritative when the server is running.",
   "tools": [
-    {
-      "name": "DetectPlcSimulationEnvironment",
-      "layer": "L1",
-      "domain": "PLCSIM",
-      "method": "DetectPlcSimulationEnvironment",
-      "returnType": "ResponseSimulationEnvironment",
-      "parameters": [],
-      "description": "[L1][PLCSIM] Read-only environment probe for standard SIMATIC S7-PLCSIM and PLCSIM Advanced. Checks installed product/path evidence, running processes, and network adapters. Does not start PLCSIM, create instances, download, or change CPU state."
-    },
     {
       "name": "AddDevice",
       "layer": "L2",
@@ -1404,6 +1395,17 @@
       "description": "[L2][Online-Monitoring]Read-only probe for PLC online/offline/watch/monitor API surfaces. It does not go online/offline, change watch tables, write values, or touch restricted safety APIs."
     },
     {
+      "name": "ProbeStandardPlcSim",
+      "layer": "L1",
+      "domain": "PLCSIM-V16",
+      "method": "ProbeStandardPlcSim",
+      "returnType": "ResponseJsonReport",
+      "parameters": [
+        "apiPath"
+      ],
+      "description": "[L1][PLCSIM-V16] Read-only environment probe for the standard SIMATIC S7-PLCSIM V16 API. Checks the installed V16 API assembly, constructs its SimulationController, reads the initial controller state, and reports standard-process evidence. PLCSIM Advanced is explicitly excluded. Does not start PLCSIM, create a simulation CPU, download a program, change CPU mode, or read project tags."
+    },
+    {
       "name": "ProbeS7CpuIdentity",
       "layer": "L2",
       "domain": "Online-Monitoring",
@@ -1681,6 +1683,78 @@
       "returnType": "ResponseMessage",
       "parameters": [],
       "description": "[L1][PLC-Software][Offline] Write SCL source text to a local .scl external-source file (UTF-8 WITH BOM, so Chinese comments are not imported as mojibake/乱码). This tool does NOT connect to TIA Portal and does NOT import anything — it only writes the file to disk and returns the path plus manual-import instructions. Use it as the robust fallback when XML block import is rejected (e.g. a TIA V20 portal rejecting V21 SimaticML tokens: 'Cannot create SW.Blocks.CompileUnit... token not supported'): the user imports the .scl manually in TIA via project tree → 'External source files' → 'Add new external file', then right-clicks the source → 'Generate blocks from source'. The sclContent must be a complete source, e.g. FUNCTION_BLOCK \"Name\" ... END_FUNCTION_BLOCK."
+    },
+    {
+      "name": "CheckDownloadReadiness",
+      "layer": "L1",
+      "domain": "PLCSIM-V16",
+      "method": "CheckDownloadReadiness",
+      "returnType": "ResponseCheckDownload",
+      "parameters": [],
+      "description": "[L1][PLCSIM-V16] Check whether the current PLC software is ready for a standard PLCSIM download without downloading or changing CPU mode. Run after CompileSoftware."
+    },
+    {
+      "name": "SetSimulationDuringBlockCompilation",
+      "layer": "L1",
+      "domain": "PLCSIM-V16",
+      "method": "SetSimulationDuringBlockCompilation",
+      "returnType": "ResponseJsonReport",
+      "parameters": [],
+      "description": "[L1][TIA-V16][PROJECT-WRITE] Enable or disable project support for simulation during block compilation and save the project."
+    },
+    {
+      "name": "InspectDownloadRoutes",
+      "layer": "L1",
+      "domain": "PLCSIM-V16",
+      "method": "InspectDownloadRoutes",
+      "returnType": "ResponseJsonReport",
+      "parameters": [],
+      "description": "[L1][PLCSIM-V16][ROUTE-BINDING] Enumerate and optionally apply a PLCSIM or Softbus download route without downloading or changing CPU mode."
+    },
+    {
+      "name": "PowerOnStandardPlcSim",
+      "layer": "L1",
+      "domain": "PLCSIM-V16",
+      "method": "PowerOnStandardPlcSim",
+      "returnType": "ResponseJsonReport",
+      "parameters": [],
+      "description": "[L1][PLCSIM-V16][RUNTIME-WRITE] Power on the standard S7-PLCSIM V16 controller in an isolated runtime directory."
+    },
+    {
+      "name": "RunStandardPlcSim",
+      "layer": "L1",
+      "domain": "PLCSIM-V16",
+      "method": "RunStandardPlcSim",
+      "returnType": "ResponseJsonReport",
+      "parameters": [],
+      "description": "[L1][PLCSIM-V16][RUNTIME-WRITE] Switch the cached standard S7-PLCSIM V16 CPU to RUN and verify the resulting mode."
+    },
+    {
+      "name": "StopStandardPlcSim",
+      "layer": "L1",
+      "domain": "PLCSIM-V16",
+      "method": "StopStandardPlcSim",
+      "returnType": "ResponseJsonReport",
+      "parameters": [],
+      "description": "[L1][PLCSIM-V16][RUNTIME-WRITE] Switch the cached standard S7-PLCSIM V16 CPU to STOP and verify the resulting mode."
+    },
+    {
+      "name": "ReadStandardPlcSimOutput",
+      "layer": "L1",
+      "domain": "PLCSIM-V16",
+      "method": "ReadStandardPlcSimOutput",
+      "returnType": "ResponseJsonReport",
+      "parameters": [],
+      "description": "[L1][PLCSIM-V16][RUNTIME-READ] Read bytes from the standard S7-PLCSIM V16 process-output image without writing or changing CPU mode."
+    },
+    {
+      "name": "DownloadToStandardPlcSim",
+      "layer": "L1",
+      "domain": "PLCSIM-V16",
+      "method": "DownloadToStandardPlcSim",
+      "returnType": "ResponseDownload",
+      "parameters": [],
+      "description": "[L1][PLCSIM-V16][RUNTIME-WRITE] Apply the selected PLCSIM route and download compiled hardware and software to the standard S7-PLCSIM V16 runtime."
     }
   ]
 }
